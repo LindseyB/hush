@@ -363,12 +363,13 @@ h1 {
 }
 
 /* Responsive updates for exercise selector with 4 buttons */
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .exercise-selector {
     flex-wrap: wrap;
-    max-width: 500px;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    gap: 0.8rem;
   }
 }
 
@@ -377,6 +378,7 @@ h1 {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    max-width: none;
   }
 
   .exercise-btn {
