@@ -79,6 +79,7 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 - Inspired by ancient breathing techniques and modern mindfulness practices
 - Built with love for mental health and wellness
 - Thanks to the React and open-source community
+- The rain falls against the parasol by straget -- https://freesound.org/s/531947/ -- License: Attribution 4.0
 
 ---
 
