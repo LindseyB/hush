@@ -164,6 +164,9 @@ function App() {
         setRemainingTime(timerMinutes * 60);
       }
 
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
       timerRef.current = setInterval(() => {
         setRemainingTime(time => {
           if (time <= 1) {
