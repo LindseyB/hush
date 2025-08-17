@@ -2,43 +2,82 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 type BreathingPhase = 'inhale' | 'hold1' | 'exhale' | 'hold2';
+type BreathingType = 'box' | 'resonant';
+
+interface BreathingExercise {
+  name: string;
+  description: string;
+  phases: BreathingPhase[];
+  phaseDurations: { [key in BreathingPhase]: number };
+  phaseLabels: { [key in BreathingPhase]: string };
+}
+
+const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
+  box: {
+    name: 'Box Breathing',
+    description: 'Inhale for 4s → Hold for 4s → Exhale for 4s → Hold for 4s',
+    phases: ['inhale', 'hold1', 'exhale', 'hold2'],
+    phaseDurations: {
+      inhale: 4000,
+      hold1: 4000,
+      exhale: 4000,
+      hold2: 4000
+    },
+    phaseLabels: {
+      inhale: 'Breathe In',
+      hold1: 'Hold',
+      exhale: 'Breathe Out',
+      hold2: 'Hold'
+    }
+  },
+  resonant: {
+    name: 'Resonant Breathing',
+    description: 'Inhale for 5s → Exhale for 5s',
+    phases: ['inhale', 'exhale'],
+    phaseDurations: {
+      inhale: 5000,
+      hold1: 0,
+      exhale: 5000,
+      hold2: 0
+    },
+    phaseLabels: {
+      inhale: 'Breathe In',
+      hold1: '',
+      exhale: 'Breathe Out',
+      hold2: ''
+    }
+  }
+};
 
 function App() {
+  const [breathingType, setBreathingType] = useState<BreathingType>('box');
   const [isActive, setIsActive] = useState(false);
   const [phase, setPhase] = useState<BreathingPhase>('inhale');
   const [progress, setProgress] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Box breathing: 4 seconds each phase
-  const phaseDuration = 4000; // 4 seconds
+  const currentExercise = breathingExercises[breathingType];
+  const phaseDuration = currentExercise.phaseDurations[phase];
   const phaseSteps = 100; // Number of animation steps
   const stepDuration = phaseDuration / phaseSteps;
 
-  const phases: BreathingPhase[] = ['inhale', 'hold1', 'exhale', 'hold2'];
-  const phaseLabels = {
-    inhale: 'Breathe In',
-    hold1: 'Hold',
-    exhale: 'Breathe Out',
-    hold2: 'Hold'
-  };
-
   useEffect(() => {
-    if (isActive) {
+    if (isActive && phaseDuration > 0) {
       intervalRef.current = setInterval(() => {
         setProgress(prev => {
           if (prev >= 100) {
             // Move to next phase
             setPhase(currentPhase => {
-              const currentIndex = phases.indexOf(currentPhase);
-              const nextIndex = (currentIndex + 1) % phases.length;
-
-              // If we completed a full cycle (back to inhale), increment count
+              const currentIndex = currentExercise.phases.indexOf(currentPhase);
+              const nextIndex = (currentIndex + 1) % currentExercise.phases.length;
+              
+              // If we completed a full cycle (back to first phase), increment count
               if (nextIndex === 0) {
                 setCycleCount(count => count + 1);
               }
-
-              return phases[nextIndex];
+              
+              return currentExercise.phases[nextIndex];
             });
             return 0;
           }
@@ -56,7 +95,7 @@ function App() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, stepDuration]);
+  }, [isActive, stepDuration, phaseDuration, currentExercise.phases]);
 
   const handleStartStop = () => {
     setIsActive(!isActive);
@@ -74,11 +113,20 @@ function App() {
     setCycleCount(0);
   };
 
+  const handleExerciseChange = (newType: BreathingType) => {
+    // Stop current exercise and reset
+    setIsActive(false);
+    setBreathingType(newType);
+    setPhase(breathingExercises[newType].phases[0]);
+    setProgress(0);
+    setCycleCount(0);
+  };
+
   // Calculate circle properties for animation
   const getCircleRadius = () => {
     const baseRadius = 60;
     const maxRadius = 120;
-
+    
     if (phase === 'inhale') {
       return baseRadius + (maxRadius - baseRadius) * (progress / 100);
     } else if (phase === 'exhale') {
@@ -94,11 +142,31 @@ function App() {
     return phase === 'hold1' ? 1 : 0.3;
   };
 
+  const getTimerDisplay = () => {
+    if (phaseDuration === 0) return '';
+    return `${Math.ceil((100 - progress) / (100 / (phaseDuration / 1000)))} seconds`;
+  };
   return (
     <div className="App">
       <header className="App-header">
         <h1>☁️ Hush</h1>
-        <p className="subtitle">Box Breathing Exercise</p>
+        <p className="subtitle">{currentExercise.name}</p>
+
+        {/* Exercise Selector */}
+        <div className="exercise-selector">
+          <button 
+            className={`exercise-btn ${breathingType === 'box' ? 'active' : ''}`}
+            onClick={() => handleExerciseChange('box')}
+          >
+            Box Breathing
+          </button>
+          <button 
+            className={`exercise-btn ${breathingType === 'resonant' ? 'active' : ''}`}
+            onClick={() => handleExerciseChange('resonant')}
+          >
+            Resonant Breathing
+          </button>
+        </div>
 
         <div className="breathing-container">
           <div className="breathing-visual">
@@ -136,14 +204,14 @@ function App() {
           </div>
 
           <div className="breathing-info">
-            <h2 className="phase-label">{phaseLabels[phase]}</h2>
+            <h2 className="phase-label">{currentExercise.phaseLabels[phase]}</h2>
             <div className="progress-bar">
               <div
                 className="progress-fill"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <p className="timer">{Math.ceil((100 - progress) / 25)} seconds</p>
+            <p className="timer">{getTimerDisplay()}</p>
           </div>
         </div>
 
@@ -162,7 +230,7 @@ function App() {
         <div className="stats">
           <p>Completed Cycles: <span className="cycle-count">{cycleCount}</span></p>
           <p className="instructions">
-            Box breathing: Inhale for 4s → Hold for 4s → Exhale for 4s → Hold for 4s
+            {currentExercise.description}
           </p>
         </div>
       </header>
