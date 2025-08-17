@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 type BreathingPhase = 'inhale' | 'hold1' | 'exhale' | 'hold2';
-type BreathingType = 'box' | 'resonant' | 'four-seven-eight';
+type BreathingType = 'box' | 'resonant' | 'four-seven-eight' | 'triangle';
 
 interface BreathingExercise {
   name: string;
@@ -30,6 +30,23 @@ const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
       hold1: 'Hold',
       exhale: 'Breathe Out',
       hold2: 'Hold'
+    }
+  },
+  triangle: {
+    name: 'Triangle Breathing',
+    description: 'Inhale for 3s → Hold for 3s → Exhale for 3s',
+    phases: ['inhale', 'hold1', 'exhale'],
+    phaseDurations: {
+      inhale: 3000,
+      hold1: 3000,
+      exhale: 3000,
+      hold2: 0
+    },
+    phaseLabels: {
+      inhale: 'Breathe In',
+      hold1: 'Hold',
+      exhale: 'Breathe Out',
+      hold2: ''
     }
   },
   resonant: {
@@ -202,6 +219,12 @@ function App() {
             onClick={() => handleExerciseChange('box')}
           >
             Box Breathing
+          </button>
+          <button
+            className={`exercise-btn ${breathingType === 'triangle' ? 'active' : ''}`}
+            onClick={() => handleExerciseChange('triangle')}
+          >
+            Triangle Breathing
           </button>
           <button
             className={`exercise-btn ${breathingType === 'resonant' ? 'active' : ''}`}
