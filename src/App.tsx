@@ -109,7 +109,15 @@ function App() {
                     setIsActive(false);
                   }
                   return newCount;
+                  return newCount;
                 });
+                // Auto-stop if reached maximum cycles
+                if (
+                  currentExercise.maxCycles &&
+                  cycleCount + 1 >= currentExercise.maxCycles
+                ) {
+                  setIsActive(false);
+                }
               }
 
               return currentExercise.phases[nextIndex];
