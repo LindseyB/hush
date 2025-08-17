@@ -7,6 +7,7 @@ type BreathingType = 'box' | 'resonant' | 'four-seven-eight' | 'triangle';
 interface BreathingExercise {
   name: string;
   description: string;
+  patternTiming: string;
   phases: BreathingPhase[];
   phaseDurations: { [key in BreathingPhase]: number };
   phaseLabels: { [key in BreathingPhase]: string };
@@ -17,7 +18,8 @@ interface BreathingExercise {
 const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
   box: {
     name: 'Box Breathing',
-    description: 'Inhale for 4s → Hold for 4s → Exhale for 4s → Hold for 4s',
+    description: 'Perfect for focus and stress relief. Used by Navy SEALs and professionals to stay calm under pressure. Great for anxiety and building mental clarity.',
+    patternTiming: 'Inhale 4s → Hold 4s → Exhale 4s → Hold 4s',
     phases: ['inhale', 'hold1', 'exhale', 'hold2'],
     phaseDurations: {
       inhale: 4000,
@@ -34,7 +36,8 @@ const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
   },
   triangle: {
     name: 'Triangle Breathing',
-    description: 'Inhale for 3s → Hold for 3s → Exhale for 3s',
+    description: 'Simple and effective for beginners. Great for quick stress relief and centering yourself. Perfect when you need a fast reset during busy moments.',
+    patternTiming: 'Inhale 3s → Hold 3s → Exhale 3s',
     phases: ['inhale', 'hold1', 'exhale'],
     phaseDurations: {
       inhale: 3000,
@@ -51,7 +54,8 @@ const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
   },
   resonant: {
     name: 'Resonant Breathing',
-    description: 'Inhale for 5s → Exhale for 5s',
+    description: 'Optimizes heart rate variability and activates your body\'s natural healing response. Excellent for reducing anxiety, improving sleep, and building emotional resilience.',
+    patternTiming: 'Inhale 5s → Exhale 5s',
     phases: ['inhale', 'exhale'],
     phaseDurations: {
       inhale: 5000,
@@ -68,7 +72,8 @@ const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
   },
   'four-seven-eight': {
     name: '4-7-8 Breathing',
-    description: 'Inhale for 4s → Hold for 7s → Exhale for 8s',
+    description: 'Known as the "natural tranquilizer" - powerful for falling asleep quickly and managing intense anxiety or panic. Based on ancient pranayama techniques.',
+    patternTiming: 'Inhale 4s → Hold 7s → Exhale 8s',
     phases: ['inhale', 'hold1', 'exhale'],
     phaseDurations: {
       inhale: 4000,
@@ -211,6 +216,13 @@ function App() {
       <header className="App-header">
         <h1>☁️ Hush</h1>
         <p className="subtitle">{currentExercise.name}</p>
+
+        {/* Breathing pattern timing */}
+        <div className="breathing-pattern">
+          <p className="pattern-timing">
+            {currentExercise.patternTiming}
+          </p>
+        </div>
 
         {/* Exercise Selector */}
         <div className="exercise-selector">

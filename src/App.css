@@ -237,6 +237,19 @@ h1 {
   display: block;
 }
 
+/* Breathing pattern timing display */
+.breathing-pattern {
+  margin: 10px 0 20px 0;
+}
+
+.pattern-timing {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.8;
+  color: #64c8ff;
+  font-weight: 400;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .App-header {
