@@ -2,6 +2,10 @@
 
 A beautiful, mindful breathing exercise app built with React. Hush helps you practice various breathing techniques for relaxation, focus, and stress relief.
 
+## 🚀 Live Demo
+
+Try it now: **https://LindseyB.github.io/hush**
+
 ## ✨ Features
 
 ### 🫁 **Four Breathing Techniques**
@@ -73,6 +77,27 @@ Builds the app for production to the `build` folder. It correctly bundles React 
 ### `npm run eject`
 **Note: this is a one-way operation. Once you `eject`, you can't go back!**
 If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time.
+
+### `npm run deploy`
+Builds and deploys the app to GitHub Pages. The app will be available at https://LindseyB.github.io/hush
+
+## 🚀 Deployment
+
+This app is automatically deployed to GitHub Pages using GitHub Actions when code is pushed to the `main` branch.
+
+**Live URL:** https://LindseyB.github.io/hush
+
+### Manual Deployment
+```bash
+npm run deploy
+```
+
+### Automatic Deployment
+- Triggered on push to `main` branch
+- Uses GitHub Actions workflow (`.github/workflows/deploy.yml`)
+- Deploys to GitHub Pages automatically
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## 🙏 Acknowledgments
 
