@@ -221,7 +221,7 @@ function App() {
 
   const toggleRain = () => {
     setIsRaining(!isRaining);
-    
+
     if (!isRaining) {
       // Start rain
       if (!audioRef.current) {
@@ -280,7 +280,7 @@ function App() {
           ))}
         </div>
       )}
-      
+
       <header className="App-header">
         <h1>
           <span className="cloud-emoji" onClick={toggleRain} title={isRaining ? "Stop rain" : "Make it rain"}>
@@ -474,9 +474,9 @@ function App() {
       <footer className="attribution">
         <p>
           "The rain falls against the parasol" by straget —{' '}
-          <a 
-            href="https://freesound.org/s/531947/" 
-            target="_blank" 
+          <a
+            href="https://freesound.org/s/531947/"
+            target="_blank"
             rel="noopener noreferrer"
           >
             https://freesound.org/s/531947/
