@@ -229,9 +229,12 @@ h1 {
 .instructions {
   font-size: 0.9rem;
   opacity: 0.6;
-  max-width: 400px;
+  max-width: 600px;
   line-height: 1.4;
   margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 /* Responsive design */
@@ -275,5 +278,115 @@ h1 {
 
   .progress-bar {
     width: 150px;
+  }
+}
+
+/* 4-7-8 Breathing Specific Styles */
+.exercise-instructions {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.exercise-instructions h3 {
+  color: #64c8ff;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.exercise-instructions ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+  text-align: left;
+  display: inline-block;
+}
+
+.exercise-instructions li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.exercise-instructions li:before {
+  content: "•";
+  color: #64c8ff;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.exercise-instructions .note {
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.cycle-warning {
+  margin: 1rem 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.warning-text {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.max-cycles {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Responsive updates for exercise selector with 3 buttons */
+@media (max-width: 768px) {
+  .exercise-selector {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .exercise-btn {
+    width: 200px;
+  }
+
+  .exercise-instructions {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .exercise-instructions {
+    padding: 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .exercise-instructions li {
+    font-size: 0.8rem;
   }
 }
