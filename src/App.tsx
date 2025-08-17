@@ -117,7 +117,7 @@ function App() {
     // Stop current exercise and reset
     setIsActive(false);
     setBreathingType(newType);
-    setPhase('inhale');
+    setPhase(breathingExercises[newType].phases[0]);
     setProgress(0);
     setCycleCount(0);
   };
