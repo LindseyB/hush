@@ -105,7 +105,10 @@ function App() {
   const [phase, setPhase] = useState<BreathingPhase>('inhale');
   const [progress, setProgress] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
+  const [timerMinutes, setTimerMinutes] = useState<number>(0); // 0 means no timer
+  const [remainingTime, setRemainingTime] = useState<number>(0); // in seconds
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentExercise = breathingExercises[breathingType];
   const phaseDuration = currentExercise.phaseDurations[phase];
@@ -126,20 +129,12 @@ function App() {
               if (nextIndex === 0) {
                 setCycleCount(count => {
                   const newCount = count + 1;
-                  // Auto-stop if reached maximum cycles
+                  // Auto-stop if reached maximum cycles (only for 4-7-8)
                   if (currentExercise.maxCycles && newCount >= currentExercise.maxCycles) {
                     setIsActive(false);
                   }
                   return newCount;
-                  return newCount;
                 });
-                // Auto-stop if reached maximum cycles
-                if (
-                  currentExercise.maxCycles &&
-                  cycleCount + 1 >= currentExercise.maxCycles
-                ) {
-                  setIsActive(false);
-                }
               }
 
               return currentExercise.phases[nextIndex];
@@ -162,20 +157,45 @@ function App() {
     };
   }, [isActive, stepDuration, phaseDuration, currentExercise.phases, currentExercise.maxCycles]);
 
+  // Timer countdown effect
+  useEffect(() => {
+    if (isActive && timerMinutes > 0 && breathingType !== 'four-seven-eight') {
+      if (remainingTime === 0) {
+        setRemainingTime(timerMinutes * 60);
+      }
+
+      timerRef.current = setInterval(() => {
+        setRemainingTime(time => {
+          if (time <= 1) {
+            setIsActive(false);
+            return 0;
+          }
+          return time - 1;
+        });
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isActive, timerMinutes, breathingType]);
+
   const handleStartStop = () => {
     setIsActive(!isActive);
     if (!isActive) {
       // Reset to beginning when starting
       setProgress(0);
       setPhase('inhale');
+      if (timerMinutes > 0 && breathingType !== 'four-seven-eight') {
+        setRemainingTime(timerMinutes * 60);
+      }
     }
-  };
-
-  const handleReset = () => {
-    setIsActive(false);
-    setPhase('inhale');
-    setProgress(0);
-    setCycleCount(0);
   };
 
   const handleExerciseChange = (newType: BreathingType) => {
@@ -185,6 +205,13 @@ function App() {
     setPhase(breathingExercises[newType].phases[0]);
     setProgress(0);
     setCycleCount(0);
+    setRemainingTime(0);
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   // Calculate circle properties for animation
@@ -252,6 +279,55 @@ function App() {
           </button>
         </div>
 
+        {/* Timer Settings - Only show for non-4-7-8 exercises */}
+        {breathingType !== 'four-seven-eight' && (
+          <div className="timer-section">
+            <div className={`timer-controls ${isActive ? 'faded' : ''}`}>
+              <label htmlFor="timer-minutes">Session Duration:</label>
+              <div className="timer-inputs">
+                <button
+                  className="timer-btn"
+                  onClick={() => setTimerMinutes(0)}
+                  disabled={isActive}
+                >
+                  ∞
+                </button>
+                <button
+                  className="timer-btn"
+                  onClick={() => setTimerMinutes(1)}
+                  disabled={isActive}
+                >
+                  1m
+                </button>
+                <button
+                  className="timer-btn"
+                  onClick={() => setTimerMinutes(3)}
+                  disabled={isActive}
+                >
+                  3m
+                </button>
+                <button
+                  className="timer-btn"
+                  onClick={() => setTimerMinutes(5)}
+                  disabled={isActive}
+                >
+                  5m
+                </button>
+                <button
+                  className="timer-btn"
+                  onClick={() => setTimerMinutes(10)}
+                  disabled={isActive}
+                >
+                  10m
+                </button>
+              </div>
+            </div>
+            {timerMinutes > 0 && remainingTime > 0 && (
+              <p className="timer-display">Time remaining: {formatTime(remainingTime)}</p>
+            )}
+          </div>
+        )}
+
         <div className="breathing-container">
           <div className="breathing-visual">
             <svg width="300" height="300" viewBox="0 0 300 300">
@@ -305,9 +381,6 @@ function App() {
             onClick={handleStartStop}
           >
             {isActive ? 'Pause' : 'Start'}
-          </button>
-          <button className="control-btn reset" onClick={handleReset}>
-            Reset
           </button>
         </div>
 
