@@ -313,7 +313,7 @@ h1 {
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.8s ease;
 }
 
 .exercise-instructions.faded {
