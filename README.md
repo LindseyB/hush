@@ -50,7 +50,7 @@ Try it now: **https://LindseyB.github.io/hush**
    - Circle stays steady during hold phases
 4. **Watch the phase labels** to know when to breathe in, hold, or breathe out
 5. **Track your progress** with the cycle counter
-6. **Use "Pause"** to take a break or **"Reset"** to start over
+6. **Use "Pause"** to take a break
 7. **Switch exercises** anytime - the app will automatically reset
 
 ### 💡 Tips for Best Practice
