@@ -6,6 +6,14 @@ A beautiful, mindful breathing exercise app built with React. Hush helps you pra
 
 Try it now: **https://LindseyB.github.io/hush**
 
+## 🍎 iPhone screen recording
+
+<div align="center">
+
+  https://github.com/user-attachments/assets/c30f2ffc-fc7b-4195-821f-ad79c479d5d8
+
+</div>
+
 ## ✨ Features
 
 ### 🫁 **Four Breathing Techniques**
