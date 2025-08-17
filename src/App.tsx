@@ -285,7 +285,9 @@ function App() {
                 <p className="warning-text">⚠️ You've reached the maximum recommended cycles. Take a break!</p>
               ) : cycleCount >= 4 ? (
                 <p className="warning-text">💡 Beginners should stop at 4 cycles. Advanced practitioners can continue to 8.</p>
-              ) : null}
+              ) : (
+                <p className="warning-text">💡 Beginners should stop at 4 cycles. Advanced practitioners can continue to 8.</p>
+              )}
             </div>
           )}
 
