@@ -225,7 +225,8 @@ function App() {
     if (!isRaining) {
       // Start rain
       if (!audioRef.current) {
-        audioRef.current = new Audio('/audio/531947__straget__the-rain-falls-against-the-parasol.wav');
+        const audioPath = `${process.env.PUBLIC_URL}/audio/531947__straget__the-rain-falls-against-the-parasol.wav`;
+        audioRef.current = new Audio(audioPath);
         audioRef.current.loop = true;
       }
       audioRef.current.play();
