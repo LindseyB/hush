@@ -107,8 +107,10 @@ function App() {
   const [cycleCount, setCycleCount] = useState(0);
   const [timerMinutes, setTimerMinutes] = useState<number>(0); // 0 means no timer
   const [remainingTime, setRemainingTime] = useState<number>(0); // in seconds
+  const [isRaining, setIsRaining] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentExercise = breathingExercises[breathingType];
   const phaseDuration = currentExercise.phaseDurations[phase];
@@ -217,6 +219,25 @@ function App() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const toggleRain = () => {
+    setIsRaining(!isRaining);
+    
+    if (!isRaining) {
+      // Start rain
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/audio/531947__straget__the-rain-falls-against-the-parasol.wav');
+        audioRef.current.loop = true;
+      }
+      audioRef.current.play();
+    } else {
+      // Stop rain
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    }
+  };
+
   // Calculate circle properties for animation
   const getCircleRadius = () => {
     const baseRadius = 60;
@@ -243,8 +264,30 @@ function App() {
   };
   return (
     <div className="App">
+      {/* Rain particles */}
+      {isRaining && (
+        <div className="rain-container">
+          {[...Array(100)].map((_, i) => (
+            <div
+              key={i}
+              className="raindrop"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${0.5 + Math.random() * 0.3}s`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
       <header className="App-header">
-        <h1>☁️ Hush</h1>
+        <h1>
+          <span className="cloud-emoji" onClick={toggleRain} title={isRaining ? "Stop rain" : "Make it rain"}>
+            ☁️
+          </span>{' '}
+          Hush
+        </h1>
         <p className="subtitle">{currentExercise.name}</p>
 
         {/* Breathing pattern timing */}
@@ -427,6 +470,20 @@ function App() {
           )}
         </div>
       </header>
+
+      <footer className="attribution">
+        <p>
+          "The rain falls against the parasol" by straget —{' '}
+          <a 
+            href="https://freesound.org/s/531947/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            https://freesound.org/s/531947/
+          </a>
+          {' '}— License: Attribution 4.0
+        </p>
+      </footer>
     </div>
   );
 }

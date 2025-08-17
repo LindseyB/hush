@@ -52,6 +52,45 @@ h1 {
   letter-spacing: 0.1em;
 }
 
+/* Cloud emoji clickable */
+.cloud-emoji {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.cloud-emoji:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+/* Rain effect */
+.rain-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.raindrop {
+  position: absolute;
+  top: -10px;
+  width: 2px;
+  height: 15px;
+  background: linear-gradient(to bottom, rgba(174, 194, 224, 0.6), rgba(174, 194, 224, 0.3));
+  border-radius: 0 0 3px 3px;
+  animation: rainFall linear infinite;
+}
+
+@keyframes rainFall {
+  to {
+    transform: translateY(100vh);
+  }
+}
+
 .subtitle {
   font-size: 1.2rem;
   opacity: 0.8;
@@ -469,5 +508,46 @@ h1 {
 
   .exercise-instructions li {
     font-size: 0.8rem;
+  }
+}
+
+/* Attribution Footer */
+.attribution {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.attribution p {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin: 0;
+  color: white;
+  line-height: 1.4;
+}
+
+.attribution a {
+  color: #64c8ff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.attribution a:hover {
+  opacity: 1;
+  text-decoration: underline;
+  color: #87ceeb;
+}
+
+@media (max-width: 768px) {
+  .attribution {
+    margin-top: 1.5rem;
+    padding: 0.8rem;
+  }
+  
+  .attribution p {
+    font-size: 0.6rem;
   }
 }
