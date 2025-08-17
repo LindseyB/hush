@@ -317,7 +317,7 @@ function App() {
               <span className="max-cycles"> / {currentExercise.maxCycles} max</span>
             )}
           </p>
-          <p className="instructions">
+          <p className={`instructions ${isActive ? 'faded' : ''}`}>
             {currentExercise.description}
           </p>
 
@@ -336,7 +336,7 @@ function App() {
 
           {/* Show instructions for 4-7-8 breathing */}
           {breathingType === 'four-seven-eight' && (
-            <div className="exercise-instructions">
+            <div className={`exercise-instructions ${isActive ? 'faded' : ''}`}>
               <h3>Important Instructions:</h3>
               <ul>
                 {currentExercise.instructions?.map((instruction, index) => (
