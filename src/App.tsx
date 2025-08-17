@@ -145,7 +145,8 @@ function App() {
   const getTimerDisplay = () => {
     if (phaseDuration === 0) return '';
     return `${Math.ceil((100 - progress) / (100 / (phaseDuration / 1000)))} seconds`;
-  };  return (
+  };
+  return (
     <div className="App">
       <header className="App-header">
         <h1>☁️ Hush</h1>
