@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 type BreathingPhase = 'inhale' | 'hold1' | 'exhale' | 'hold2';
-type BreathingType = 'box' | 'resonant';
+type BreathingType = 'box' | 'resonant' | 'four-seven-eight';
 
 interface BreathingExercise {
   name: string;
@@ -10,6 +10,8 @@ interface BreathingExercise {
   phases: BreathingPhase[];
   phaseDurations: { [key in BreathingPhase]: number };
   phaseLabels: { [key in BreathingPhase]: string };
+  instructions?: string[];
+  maxCycles?: number;
 }
 
 const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
@@ -46,6 +48,32 @@ const breathingExercises: { [key in BreathingType]: BreathingExercise } = {
       exhale: 'Breathe Out',
       hold2: ''
     }
+  },
+  'four-seven-eight': {
+    name: '4-7-8 Breathing',
+    description: 'Inhale for 4s → Hold for 7s → Exhale for 8s',
+    phases: ['inhale', 'hold1', 'exhale'],
+    phaseDurations: {
+      inhale: 4000,
+      hold1: 7000,
+      exhale: 8000,
+      hold2: 0
+    },
+    phaseLabels: {
+      inhale: 'Breathe In (nose)',
+      hold1: 'Hold',
+      exhale: 'Breathe Out (mouth)',
+      hold2: ''
+    },
+    instructions: [
+      'Sit comfortably with a straight back (or lie down if preparing for sleep)',
+      'Rest your tongue gently against the roof of your mouth, behind your front teeth',
+      'Breathe in silently through your nose for 4 counts',
+      'Hold your breath for 7 counts',
+      'Breathe out forcefully through your mouth for 8 counts, making a "whoosh" sound',
+      'Beginners should only do 4 cycles at first'
+    ],
+    maxCycles: 8
   }
 };
 
@@ -71,12 +99,27 @@ function App() {
             setPhase(currentPhase => {
               const currentIndex = currentExercise.phases.indexOf(currentPhase);
               const nextIndex = (currentIndex + 1) % currentExercise.phases.length;
-              
+
               // If we completed a full cycle (back to first phase), increment count
               if (nextIndex === 0) {
-                setCycleCount(count => count + 1);
+                setCycleCount(count => {
+                  const newCount = count + 1;
+                  // Auto-stop if reached maximum cycles
+                  if (currentExercise.maxCycles && newCount >= currentExercise.maxCycles) {
+                    setIsActive(false);
+                  }
+                  return newCount;
+                  return newCount;
+                });
+                // Auto-stop if reached maximum cycles
+                if (
+                  currentExercise.maxCycles &&
+                  cycleCount + 1 >= currentExercise.maxCycles
+                ) {
+                  setIsActive(false);
+                }
               }
-              
+
               return currentExercise.phases[nextIndex];
             });
             return 0;
@@ -95,7 +138,7 @@ function App() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, stepDuration, phaseDuration, currentExercise.phases]);
+  }, [isActive, stepDuration, phaseDuration, currentExercise.phases, currentExercise.maxCycles]);
 
   const handleStartStop = () => {
     setIsActive(!isActive);
@@ -126,7 +169,7 @@ function App() {
   const getCircleRadius = () => {
     const baseRadius = 60;
     const maxRadius = 120;
-    
+
     if (phase === 'inhale') {
       return baseRadius + (maxRadius - baseRadius) * (progress / 100);
     } else if (phase === 'exhale') {
@@ -154,17 +197,23 @@ function App() {
 
         {/* Exercise Selector */}
         <div className="exercise-selector">
-          <button 
+          <button
             className={`exercise-btn ${breathingType === 'box' ? 'active' : ''}`}
             onClick={() => handleExerciseChange('box')}
           >
             Box Breathing
           </button>
-          <button 
+          <button
             className={`exercise-btn ${breathingType === 'resonant' ? 'active' : ''}`}
             onClick={() => handleExerciseChange('resonant')}
           >
             Resonant Breathing
+          </button>
+          <button
+            className={`exercise-btn ${breathingType === 'four-seven-eight' ? 'active' : ''}`}
+            onClick={() => handleExerciseChange('four-seven-eight')}
+          >
+            4-7-8 Breathing
           </button>
         </div>
 
@@ -228,10 +277,43 @@ function App() {
         </div>
 
         <div className="stats">
-          <p>Completed Cycles: <span className="cycle-count">{cycleCount}</span></p>
+          <p>Completed Cycles: <span className="cycle-count">{cycleCount}</span>
+            {currentExercise.maxCycles && (
+              <span className="max-cycles"> / {currentExercise.maxCycles} max</span>
+            )}
+          </p>
           <p className="instructions">
             {currentExercise.description}
           </p>
+
+          {/* Show warning for 4-7-8 breathing if approaching/at limit */}
+          {breathingType === 'four-seven-eight' && cycleCount >= 4 && (
+            <div className="cycle-warning">
+              {cycleCount >= 8 ? (
+                <p className="warning-text">⚠️ You've reached the maximum recommended cycles. Take a break!</p>
+              ) : cycleCount >= 4 ? (
+                <p className="warning-text">💡 Beginners should stop at 4 cycles. Advanced practitioners can continue to 8.</p>
+              ) : (
+                <p className="warning-text">💡 Beginners should stop at 4 cycles. Advanced practitioners can continue to 8.</p>
+              )}
+            </div>
+          )}
+
+          {/* Show instructions for 4-7-8 breathing */}
+          {breathingType === 'four-seven-eight' && (
+            <div className="exercise-instructions">
+              <h3>Important Instructions:</h3>
+              <ul>
+                {currentExercise.instructions?.map((instruction, index) => (
+                  <li key={index}>{instruction}</li>
+                ))}
+              </ul>
+              <p className="note">
+                <strong>Note:</strong> If you feel lightheaded, this is normal for beginners.
+                Start with only 4 cycles and gradually work up to 8 as you become comfortable.
+              </p>
+            </div>
+          )}
         </div>
       </header>
     </div>
