@@ -181,6 +181,19 @@ h1 {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
+.timer-btn.selected {
+  background: rgba(100, 200, 255, 0.3);
+  border-color: #64c8ff;
+  color: #64c8ff;
+  box-shadow: 0 0 10px rgba(100, 200, 255, 0.3);
+}
+
+.timer-btn.selected:hover:not(:disabled) {
+  background: rgba(100, 200, 255, 0.4);
+  border-color: #87ceeb;
+  color: #87ceeb;
+}
+
 .timer-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;

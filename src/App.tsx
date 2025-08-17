@@ -332,35 +332,35 @@ function App() {
               <label htmlFor="timer-minutes">Session Duration:</label>
               <div className="timer-inputs">
                 <button
-                  className="timer-btn"
+                  className={`timer-btn ${timerMinutes === 0 ? 'selected' : ''}`}
                   onClick={() => setTimerMinutes(0)}
                   disabled={isActive}
                 >
                   ∞
                 </button>
                 <button
-                  className="timer-btn"
+                  className={`timer-btn ${timerMinutes === 1 ? 'selected' : ''}`}
                   onClick={() => setTimerMinutes(1)}
                   disabled={isActive}
                 >
                   1m
                 </button>
                 <button
-                  className="timer-btn"
+                  className={`timer-btn ${timerMinutes === 3 ? 'selected' : ''}`}
                   onClick={() => setTimerMinutes(3)}
                   disabled={isActive}
                 >
                   3m
                 </button>
                 <button
-                  className="timer-btn"
+                  className={`timer-btn ${timerMinutes === 5 ? 'selected' : ''}`}
                   onClick={() => setTimerMinutes(5)}
                   disabled={isActive}
                 >
                   5m
                 </button>
                 <button
-                  className="timer-btn"
+                  className={`timer-btn ${timerMinutes === 10 ? 'selected' : ''}`}
                   onClick={() => setTimerMinutes(10)}
                   disabled={isActive}
                 >
