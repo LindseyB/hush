@@ -225,7 +225,10 @@ function App() {
     if (!isRaining) {
       // Start rain
       if (!audioRef.current) {
-        const audioPath = `${process.env.PUBLIC_URL}/audio/531947__straget__the-rain-falls-against-the-parasol.wav`;
+        // Fallback approach for PUBLIC_URL
+        const publicUrl = process.env.PUBLIC_URL || (window.location.pathname !== '/' ? window.location.pathname.replace(/\/$/, '') : '');
+        const audioPath = `${publicUrl}/audio/531947__straget__the-rain-falls-against-the-parasol.wav`;
+        console.log('Audio path:', audioPath); // Debug log
         audioRef.current = new Audio(audioPath);
         audioRef.current.loop = true;
       }
