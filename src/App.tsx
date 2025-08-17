@@ -184,7 +184,7 @@ function App() {
         clearInterval(timerRef.current);
       }
     };
-  }, [isActive, timerMinutes, breathingType]);
+  }, [isActive, timerMinutes, breathingType, remainingTime]);
 
   const handleStartStop = () => {
     setIsActive(!isActive);
