@@ -136,6 +136,139 @@ h1 {
   box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
 }
 
+/* Collapsible Settings Menu */
+.settings-menu {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  text-align: left;
+}
+
+.settings-toggle {
+  padding: 8px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 120px;
+}
+
+.settings-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.settings-toggle .arrow {
+  transition: transform 0.3s ease;
+  font-size: 0.7rem;
+}
+
+.settings-toggle .arrow.open {
+  transform: rotate(180deg);
+}
+
+.settings-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 280px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+  opacity: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  margin-top: 0.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.settings-content.open {
+  max-height: 400px;
+  opacity: 1;
+  padding: 1.5rem;
+}
+
+.settings-content .visualization-toggle {
+  margin: 0 0 1.5rem 0;
+}
+
+.settings-content .timer-section {
+  margin: 0;
+}
+
+/* Visualization Mode Toggle */
+.visualization-toggle {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.toggle-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  font-weight: 300;
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 90px;
+}
+
+.toggle-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-color: #4facfe;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.toggle-btn.active:hover {
+  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+}
+
+.toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Timer Controls */
 .timer-section {
   margin: 1.5rem 0;
@@ -505,6 +638,35 @@ h1 {
 
   .exercise-btn {
     width: 200px;
+  }
+  
+  .settings-menu {
+    top: 15px;
+    right: 15px;
+  }
+  
+  .settings-toggle {
+    min-width: 100px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .settings-content {
+    min-width: 260px;
+    right: -10px;
+  }
+  
+  .toggle-buttons {
+    gap: 0.5rem;
+  }
+  
+  .toggle-btn {
+    min-width: 85px;
+    font-size: 0.8rem;
+  }
+  
+  .settings-content.open {
+    padding: 1rem;
   }
 
   .exercise-instructions {
