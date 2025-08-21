@@ -108,6 +108,8 @@ function App() {
   const [timerMinutes, setTimerMinutes] = useState<number>(0); // 0 means no timer
   const [remainingTime, setRemainingTime] = useState<number>(0); // in seconds
   const [isRaining, setIsRaining] = useState(false);
+  const [useShapes, setUseShapes] = useState(true); // Toggle between shapes and circles
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Toggle for settings menu
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -241,7 +243,7 @@ function App() {
     }
   };
 
-  // Calculate circle properties for animation
+  // Calculate circle properties for animation (kept for backward compatibility)
   const getCircleRadius = () => {
     const baseRadius = 60;
     const maxRadius = 120;
@@ -259,6 +261,449 @@ function App() {
       return 0.3 + 0.7 * Math.sin((progress / 100) * Math.PI);
     }
     return phase === 'hold1' ? 1 : 0.3;
+  };
+
+  // Calculate animation position for different breathing shapes
+  const getAnimationPosition = () => {
+    // Calculate the total progress based on which phase we're in and progress within that phase
+    let totalProgress = 0;
+    const phasesInOrder = currentExercise.phases;
+    const currentPhaseIndex = phasesInOrder.indexOf(phase);
+    
+    // Add completed phases
+    for (let i = 0; i < currentPhaseIndex; i++) {
+      const phaseDur = currentExercise.phaseDurations[phasesInOrder[i]];
+      if (phaseDur > 0) {
+        totalProgress += 25; // Each phase gets 25% (assuming max 4 phases)
+      }
+    }
+    
+    // Add current phase progress
+    const currentPhaseDuration = currentExercise.phaseDurations[phase];
+    if (currentPhaseDuration > 0) {
+      const phaseWeight = 100 / phasesInOrder.filter(p => currentExercise.phaseDurations[p] > 0).length;
+      totalProgress += (progress / 100) * phaseWeight;
+    }
+    
+    return Math.min(totalProgress, 100);
+  };
+
+  // Render breathing shape based on type
+  const renderBreathingShape = () => {
+    if (!useShapes) {
+      // Return original circle animation when shapes are disabled
+      return (
+        <circle
+          cx="150"
+          cy="150"
+          r={getCircleRadius()}
+          fill={`rgba(100, 200, 255, ${getCircleOpacity()})`}
+          stroke="rgba(100, 200, 255, 0.8)"
+          strokeWidth="3"
+          className="breathing-circle"
+        />
+      );
+    }
+
+    // Return shape-based animations when shapes are enabled
+    const animationProgress = getAnimationPosition();
+    
+    switch (breathingType) {
+      case 'box':
+        return renderBoxBreathing(animationProgress);
+      case 'triangle':
+        return renderTriangleBreathing(animationProgress);
+      case 'resonant':
+        return renderResonantBreathing(animationProgress);
+      case 'four-seven-eight':
+        return renderFourSevenEightBreathing(animationProgress);
+      default:
+        return renderDefaultCircle();
+    }
+  };
+
+  const renderBoxBreathing = (animationProgress: number) => {
+    const size = 120;
+    const centerX = 150;
+    const centerY = 150;
+    const halfSize = size / 2;
+    
+    // Define the four corners of the box
+    const corners = [
+      { x: centerX - halfSize, y: centerY - halfSize }, // top-left
+      { x: centerX + halfSize, y: centerY - halfSize }, // top-right
+      { x: centerX + halfSize, y: centerY + halfSize }, // bottom-right
+      { x: centerX - halfSize, y: centerY + halfSize }  // bottom-left
+    ];
+
+    // Calculate dot position based on current phase and progress
+    const getDotPosition = () => {
+      const sideProgress = progress / 100;
+      
+      if (phase === 'inhale') {
+        // Top edge (left to right)
+        return {
+          x: corners[0].x + (corners[1].x - corners[0].x) * sideProgress,
+          y: corners[0].y
+        };
+      } else if (phase === 'hold1') {
+        // Right edge (top to bottom)
+        return {
+          x: corners[1].x,
+          y: corners[1].y + (corners[2].y - corners[1].y) * sideProgress
+        };
+      } else if (phase === 'exhale') {
+        // Bottom edge (right to left)
+        return {
+          x: corners[2].x - (corners[2].x - corners[3].x) * sideProgress,
+          y: corners[2].y
+        };
+      } else { // hold2
+        // Left edge (bottom to top)
+        return {
+          x: corners[3].x,
+          y: corners[3].y - (corners[3].y - corners[0].y) * sideProgress
+        };
+      }
+    };
+
+    const dotPos = getDotPosition();
+
+    return (
+      <>
+        {/* Box outline */}
+        <rect
+          x={centerX - halfSize}
+          y={centerY - halfSize}
+          width={size}
+          height={size}
+          fill="none"
+          stroke="rgba(100, 200, 255, 0.8)"
+          strokeWidth="3"
+        />
+        
+        {/* Corner dots */}
+        {corners.map((corner, index) => (
+          <circle
+            key={index}
+            cx={corner.x}
+            cy={corner.y}
+            r="4"
+            fill="rgba(255, 255, 255, 0.6)"
+          />
+        ))}
+        
+        {/* Moving dot */}
+        <circle
+          cx={dotPos.x}
+          cy={dotPos.y}
+          r="6"
+          fill="rgba(100, 200, 255, 1)"
+        />
+      </>
+    );
+  };
+
+  const renderTriangleBreathing = (animationProgress: number) => {
+    const size = 156; // 30% bigger (was 120, now 120 * 1.3 = 156)
+    const centerX = 150;
+    const centerY = 150;
+    const height = (size * Math.sqrt(3)) / 2;
+    
+    // Define the three points of an equilateral triangle
+    const points = [
+      { x: centerX, y: centerY - height * 2/3 },           // top
+      { x: centerX - size/2, y: centerY + height * 1/3 },  // bottom-left
+      { x: centerX + size/2, y: centerY + height * 1/3 }   // bottom-right
+    ];
+
+    // Calculate dot position based on current phase
+    const getDotPosition = () => {
+      const sideProgress = progress / 100;
+      
+      if (phase === 'inhale') {
+        // Bottom-left to top
+        return {
+          x: points[1].x + (points[0].x - points[1].x) * sideProgress,
+          y: points[1].y + (points[0].y - points[1].y) * sideProgress
+        };
+      } else if (phase === 'hold1') {
+        // Top to bottom-right
+        return {
+          x: points[0].x + (points[2].x - points[0].x) * sideProgress,
+          y: points[0].y + (points[2].y - points[0].y) * sideProgress
+        };
+      } else { // exhale
+        // Bottom-right to bottom-left
+        return {
+          x: points[2].x + (points[1].x - points[2].x) * sideProgress,
+          y: points[2].y + (points[1].y - points[2].y) * sideProgress
+        };
+      }
+    };
+
+    const dotPos = getDotPosition();
+
+    return (
+      <>
+        {/* Triangle outline */}
+        <polygon
+          points={`${points[0].x},${points[0].y} ${points[1].x},${points[1].y} ${points[2].x},${points[2].y}`}
+          fill="none"
+          stroke="rgba(100, 200, 255, 0.8)"
+          strokeWidth="3"
+        />
+        
+        {/* Corner dots */}
+        {points.map((point, index) => (
+          <circle
+            key={index}
+            cx={point.x}
+            cy={point.y}
+            r="4"
+            fill="rgba(255, 255, 255, 0.6)"
+          />
+        ))}
+        
+        {/* Moving dot */}
+        <circle
+          cx={dotPos.x}
+          cy={dotPos.y}
+          r="6"
+          fill="rgba(100, 200, 255, 1)"
+        />
+      </>
+    );
+  };
+
+  const renderResonantBreathing = (animationProgress: number) => {
+    const lineWidth = 200;
+    const centerX = 150;
+    const centerY = 150;
+    const startX = centerX - lineWidth / 2;
+    const endX = centerX + lineWidth / 2;
+
+    // Calculate dot position (back and forth along the line based on phase)
+    const getDotPosition = () => {
+      const sideProgress = progress / 100;
+      
+      if (phase === 'inhale') {
+        // Move from left to right
+        return startX + (endX - startX) * sideProgress;
+      } else { // exhale
+        // Move from right to left
+        return endX - (endX - startX) * sideProgress;
+      }
+    };
+
+    const dotX = getDotPosition();
+
+    return (
+      <>
+        {/* Horizontal line */}
+        <line
+          x1={startX}
+          y1={centerY}
+          x2={endX}
+          y2={centerY}
+          stroke="rgba(100, 200, 255, 0.8)"
+          strokeWidth="3"
+        />
+        
+        {/* End points */}
+        <circle
+          cx={startX}
+          cy={centerY}
+          r="4"
+          fill="rgba(255, 255, 255, 0.6)"
+        />
+        <circle
+          cx={endX}
+          cy={centerY}
+          r="4"
+          fill="rgba(255, 255, 255, 0.6)"
+        />
+        
+        {/* Moving dot */}
+        <circle
+          cx={dotX}
+          cy={centerY}
+          r="6"
+          fill="rgba(100, 200, 255, 1)"
+        />
+      </>
+    );
+  };
+
+  const renderFourSevenEightBreathing = (animationProgress: number) => {
+    const centerX = 150;
+    const centerY = 150;
+    const radius = 156; // 30% bigger radius for the Reuleaux triangle (120 * 1.3)
+    
+    // For a proper Reuleaux triangle, the distance between vertices equals the radius
+    // The three vertices of the equilateral triangle (centers of the arcs)
+    const sideLength = radius;
+    const height = sideLength * Math.sqrt(3) / 2;
+    
+    const vertices = [
+      { x: centerX, y: centerY - height * 2/3 },                    // top
+      { x: centerX - sideLength / 2, y: centerY + height / 3 },     // bottom-left
+      { x: centerX + sideLength / 2, y: centerY + height / 3 }      // bottom-right
+    ];
+
+    // The corners of the Reuleaux triangle (where the arcs meet)
+    const corners = [
+      { x: centerX - sideLength / 2, y: centerY + height / 3 },     // left corner
+      { x: centerX + sideLength / 2, y: centerY + height / 3 },     // right corner
+      { x: centerX, y: centerY - height * 2/3 }                     // top corner
+    ];
+
+    // Calculate dot position based on current phase
+    const getDotPosition = () => {
+      const t = progress / 100;
+      
+      if (phase === 'inhale') {
+        // Arc from left corner to top corner (centered at bottom-right vertex)
+        const center = vertices[2]; // bottom-right vertex
+        // Calculate angle from center to left corner
+        const startAngle = Math.atan2(corners[0].y - center.y, corners[0].x - center.x);
+        // Calculate angle from center to top corner  
+        const endAngle = Math.atan2(corners[2].y - center.y, corners[2].x - center.x);
+        
+        // Ensure we go the shorter way around the circle
+        let deltaAngle = endAngle - startAngle;
+        if (deltaAngle > Math.PI) {
+          deltaAngle -= 2 * Math.PI;
+        } else if (deltaAngle < -Math.PI) {
+          deltaAngle += 2 * Math.PI;
+        }
+        
+        const angle = startAngle + deltaAngle * t;
+        
+        return {
+          x: center.x + radius * Math.cos(angle),
+          y: center.y + radius * Math.sin(angle)
+        };
+      } else if (phase === 'hold1') {
+        // Arc from top corner to right corner (centered at bottom-left vertex)
+        const center = vertices[1]; // bottom-left vertex
+        const startAngle = Math.atan2(corners[2].y - center.y, corners[2].x - center.x);
+        const endAngle = Math.atan2(corners[1].y - center.y, corners[1].x - center.x);
+        
+        // Ensure we go the shorter way around the circle
+        let deltaAngle = endAngle - startAngle;
+        if (deltaAngle > Math.PI) {
+          deltaAngle -= 2 * Math.PI;
+        } else if (deltaAngle < -Math.PI) {
+          deltaAngle += 2 * Math.PI;
+        }
+        
+        const angle = startAngle + deltaAngle * t;
+        
+        return {
+          x: center.x + radius * Math.cos(angle),
+          y: center.y + radius * Math.sin(angle)
+        };
+      } else if (phase === 'exhale') {
+        // Arc from right corner to left corner (centered at top vertex)
+        const center = vertices[0]; // top vertex
+        const startAngle = Math.atan2(corners[1].y - center.y, corners[1].x - center.x);
+        const endAngle = Math.atan2(corners[0].y - center.y, corners[0].x - center.x);
+        
+        // For this arc, we want to go the long way around (clockwise from right to left)
+        let deltaAngle = endAngle - startAngle;
+        if (deltaAngle < 0) {
+          deltaAngle += 2 * Math.PI;
+        }
+        
+        const angle = startAngle + deltaAngle * t;
+        
+        return {
+          x: center.x + radius * Math.cos(angle),
+          y: center.y + radius * Math.sin(angle)
+        };
+      }
+      
+      return corners[0]; // default to left corner
+    };
+
+    const dotPos = getDotPosition();
+
+    return (
+      <>
+        {/* Reuleaux triangle using three circular arcs */}
+        <path
+          d={`M ${corners[0].x} ${corners[0].y}
+              A ${radius} ${radius} 0 0 1 ${corners[2].x} ${corners[2].y}
+              A ${radius} ${radius} 0 0 1 ${corners[1].x} ${corners[1].y}
+              A ${radius} ${radius} 0 0 1 ${corners[0].x} ${corners[0].y} Z`}
+          fill="none"
+          stroke="rgba(100, 200, 255, 0.8)"
+          strokeWidth="3"
+        />
+        
+        {/* Highlight the active arc */}
+        {phase === 'inhale' && (
+          <path
+            d={`M ${corners[0].x} ${corners[0].y}
+                A ${radius} ${radius} 0 0 1 ${corners[2].x} ${corners[2].y}`}
+            fill="none"
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+        
+        {phase === 'hold1' && (
+          <path
+            d={`M ${corners[2].x} ${corners[2].y}
+                A ${radius} ${radius} 0 0 1 ${corners[1].x} ${corners[1].y}`}
+            fill="none"
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+        
+        {phase === 'exhale' && (
+          <path
+            d={`M ${corners[1].x} ${corners[1].y}
+                A ${radius} ${radius} 0 0 1 ${corners[0].x} ${corners[0].y}`}
+            fill="none"
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+        
+        {/* Corner dots */}
+        <circle cx={corners[0].x} cy={corners[0].y} r="4" fill="rgba(255, 255, 255, 0.6)" />
+        <circle cx={corners[1].x} cy={corners[1].y} r="4" fill="rgba(255, 255, 255, 0.6)" />
+        <circle cx={corners[2].x} cy={corners[2].y} r="4" fill="rgba(255, 255, 255, 0.6)" />
+        
+        {/* Moving dot */}
+        <circle
+          cx={dotPos.x}
+          cy={dotPos.y}
+          r="6"
+          fill="rgba(100, 200, 255, 1)"
+        />
+      </>
+    );
+  };
+
+  const renderDefaultCircle = () => {
+    return (
+      <circle
+        cx="150"
+        cy="150"
+        r={getCircleRadius()}
+        fill={`rgba(100, 200, 255, ${getCircleOpacity()})`}
+        stroke="rgba(100, 200, 255, 0.8)"
+        strokeWidth="3"
+        className="breathing-circle"
+      />
+    );
   };
 
   const getTimerDisplay = () => {
@@ -328,87 +773,109 @@ function App() {
           </button>
         </div>
 
-        {/* Timer Settings - Only show for non-4-7-8 exercises */}
-        {breathingType !== 'four-seven-eight' && (
-          <div className="timer-section">
-            <div className={`timer-controls ${isActive ? 'faded' : ''}`}>
-              <label htmlFor="timer-minutes">Session Duration:</label>
-              <div className="timer-inputs">
+        {/* Collapsible Settings Menu */}
+        <div className="settings-menu">
+          <button 
+            className="settings-toggle"
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+            aria-expanded={isSettingsOpen}
+          >
+            ⚙️ Settings
+            <span className={`arrow ${isSettingsOpen ? 'open' : ''}`}>▼</span>
+          </button>
+          
+          <div className={`settings-content ${isSettingsOpen ? 'open' : ''}`}>
+            {/* Visualization Mode Toggle */}
+            <div className="visualization-toggle">
+              <label className="toggle-label">
+                Visualization Mode:
+              </label>
+              <div className="toggle-buttons">
                 <button
-                  className={`timer-btn ${timerMinutes === 0 ? 'selected' : ''}`}
-                  onClick={() => setTimerMinutes(0)}
+                  className={`toggle-btn ${useShapes ? 'active' : ''}`}
+                  onClick={() => setUseShapes(true)}
                   disabled={isActive}
                 >
-                  ∞
+                  🔺 Shapes
                 </button>
                 <button
-                  className={`timer-btn ${timerMinutes === 1 ? 'selected' : ''}`}
-                  onClick={() => setTimerMinutes(1)}
+                  className={`toggle-btn ${!useShapes ? 'active' : ''}`}
+                  onClick={() => setUseShapes(false)}
                   disabled={isActive}
                 >
-                  1m
-                </button>
-                <button
-                  className={`timer-btn ${timerMinutes === 3 ? 'selected' : ''}`}
-                  onClick={() => setTimerMinutes(3)}
-                  disabled={isActive}
-                >
-                  3m
-                </button>
-                <button
-                  className={`timer-btn ${timerMinutes === 5 ? 'selected' : ''}`}
-                  onClick={() => setTimerMinutes(5)}
-                  disabled={isActive}
-                >
-                  5m
-                </button>
-                <button
-                  className={`timer-btn ${timerMinutes === 10 ? 'selected' : ''}`}
-                  onClick={() => setTimerMinutes(10)}
-                  disabled={isActive}
-                >
-                  10m
+                  ⭕ Circle
                 </button>
               </div>
             </div>
-            {timerMinutes > 0 && remainingTime > 0 && (
-              <p className="timer-display">Time remaining: {formatTime(remainingTime)}</p>
+
+            {/* Timer Settings - Only show for non-4-7-8 exercises */}
+            {breathingType !== 'four-seven-eight' && (
+              <div className="timer-section">
+                <div className={`timer-controls ${isActive ? 'faded' : ''}`}>
+                  <label htmlFor="timer-minutes">Session Duration:</label>
+                  <div className="timer-inputs">
+                    <button
+                      className={`timer-btn ${timerMinutes === 0 ? 'selected' : ''}`}
+                      onClick={() => setTimerMinutes(0)}
+                      disabled={isActive}
+                    >
+                      ∞
+                    </button>
+                    <button
+                      className={`timer-btn ${timerMinutes === 1 ? 'selected' : ''}`}
+                      onClick={() => setTimerMinutes(1)}
+                      disabled={isActive}
+                    >
+                      1m
+                    </button>
+                    <button
+                      className={`timer-btn ${timerMinutes === 3 ? 'selected' : ''}`}
+                      onClick={() => setTimerMinutes(3)}
+                      disabled={isActive}
+                    >
+                      3m
+                    </button>
+                    <button
+                      className={`timer-btn ${timerMinutes === 5 ? 'selected' : ''}`}
+                      onClick={() => setTimerMinutes(5)}
+                      disabled={isActive}
+                    >
+                      5m
+                    </button>
+                    <button
+                      className={`timer-btn ${timerMinutes === 10 ? 'selected' : ''}`}
+                      onClick={() => setTimerMinutes(10)}
+                      disabled={isActive}
+                    >
+                      10m
+                    </button>
+                  </div>
+                </div>
+                {timerMinutes > 0 && remainingTime > 0 && (
+                  <p className="timer-display">Time remaining: {formatTime(remainingTime)}</p>
+                )}
+              </div>
             )}
           </div>
-        )}
+        </div>
 
         <div className="breathing-container">
           <div className="breathing-visual">
             <svg width="300" height="300" viewBox="0 0 300 300">
-              {/* Background circle */}
-              <circle
-                cx="150"
-                cy="150"
-                r="130"
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.1)"
-                strokeWidth="2"
-              />
+              {/* Background circle - only show in circle mode */}
+              {!useShapes && (
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="130"
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.1)"
+                  strokeWidth="2"
+                />
+              )}
 
-              {/* Animated breathing circle */}
-              <circle
-                cx="150"
-                cy="150"
-                r={getCircleRadius()}
-                fill={`rgba(100, 200, 255, ${getCircleOpacity()})`}
-                stroke="rgba(100, 200, 255, 0.8)"
-                strokeWidth="3"
-                className="breathing-circle"
-              />
-
-              {/* Center dot */}
-              <circle
-                cx="150"
-                cy="150"
-                r="4"
-                fill="white"
-                opacity="0.8"
-              />
+              {/* Animated breathing shapes */}
+              {renderBreathingShape()}
             </svg>
           </div>
 
