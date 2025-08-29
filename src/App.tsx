@@ -245,8 +245,8 @@ function App() {
 
   // Calculate circle properties for animation (kept for backward compatibility)
   const getCircleRadius = () => {
-    const baseRadius = 60;
-    const maxRadius = 120;
+    const baseRadius = 80;
+    const maxRadius = 180;
 
     if (phase === 'inhale') {
       return baseRadius + (maxRadius - baseRadius) * (progress / 100);
@@ -269,7 +269,7 @@ function App() {
     let totalProgress = 0;
     const phasesInOrder = currentExercise.phases;
     const currentPhaseIndex = phasesInOrder.indexOf(phase);
-    
+
     // Add completed phases
     for (let i = 0; i < currentPhaseIndex; i++) {
       const phaseDur = currentExercise.phaseDurations[phasesInOrder[i]];
@@ -277,14 +277,14 @@ function App() {
         totalProgress += 25; // Each phase gets 25% (assuming max 4 phases)
       }
     }
-    
+
     // Add current phase progress
     const currentPhaseDuration = currentExercise.phaseDurations[phase];
     if (currentPhaseDuration > 0) {
       const phaseWeight = 100 / phasesInOrder.filter(p => currentExercise.phaseDurations[p] > 0).length;
       totalProgress += (progress / 100) * phaseWeight;
     }
-    
+
     return Math.min(totalProgress, 100);
   };
 
@@ -294,8 +294,8 @@ function App() {
       // Return original circle animation when shapes are disabled
       return (
         <circle
-          cx="150"
-          cy="150"
+          cx="200"
+          cy="200"
           r={getCircleRadius()}
           fill={`rgba(100, 200, 255, ${getCircleOpacity()})`}
           stroke="rgba(100, 200, 255, 0.8)"
@@ -307,7 +307,7 @@ function App() {
 
     // Return shape-based animations when shapes are enabled
     const animationProgress = getAnimationPosition();
-    
+
     switch (breathingType) {
       case 'box':
         return renderBoxBreathing(animationProgress);
@@ -323,11 +323,11 @@ function App() {
   };
 
   const renderBoxBreathing = (animationProgress: number) => {
-    const size = 120;
-    const centerX = 150;
-    const centerY = 150;
+    const size = 260;  // Increased by 30% from 200 to 260
+    const centerX = 200;  // Updated center for new viewBox
+    const centerY = 200;  // Updated center for new viewBox
     const halfSize = size / 2;
-    
+
     // Define the four corners of the box
     const corners = [
       { x: centerX - halfSize, y: centerY - halfSize }, // top-left
@@ -339,7 +339,7 @@ function App() {
     // Calculate dot position based on current phase and progress
     const getDotPosition = () => {
       const sideProgress = progress / 100;
-      
+
       if (phase === 'inhale') {
         // Top edge (left to right)
         return {
@@ -381,7 +381,7 @@ function App() {
           stroke="rgba(100, 200, 255, 0.8)"
           strokeWidth="3"
         />
-        
+
         {/* Corner dots */}
         {corners.map((corner, index) => (
           <circle
@@ -392,7 +392,7 @@ function App() {
             fill="rgba(255, 255, 255, 0.6)"
           />
         ))}
-        
+
         {/* Moving dot */}
         <circle
           cx={dotPos.x}
@@ -405,11 +405,11 @@ function App() {
   };
 
   const renderTriangleBreathing = (animationProgress: number) => {
-    const size = 156; // 30% bigger (was 120, now 120 * 1.3 = 156)
-    const centerX = 150;
-    const centerY = 150;
+    const size = 312;  // Increased by 30% from 240 to 312
+    const centerX = 200;  // Updated center for new viewBox
+    const centerY = 200;  // Updated center for new viewBox
     const height = (size * Math.sqrt(3)) / 2;
-    
+
     // Define the three points of an equilateral triangle
     const points = [
       { x: centerX, y: centerY - height * 2/3 },           // top
@@ -420,7 +420,7 @@ function App() {
     // Calculate dot position based on current phase
     const getDotPosition = () => {
       const sideProgress = progress / 100;
-      
+
       if (phase === 'inhale') {
         // Bottom-left to top
         return {
@@ -453,7 +453,7 @@ function App() {
           stroke="rgba(100, 200, 255, 0.8)"
           strokeWidth="3"
         />
-        
+
         {/* Corner dots */}
         {points.map((point, index) => (
           <circle
@@ -464,7 +464,7 @@ function App() {
             fill="rgba(255, 255, 255, 0.6)"
           />
         ))}
-        
+
         {/* Moving dot */}
         <circle
           cx={dotPos.x}
@@ -477,16 +477,16 @@ function App() {
   };
 
   const renderResonantBreathing = (animationProgress: number) => {
-    const lineWidth = 200;
-    const centerX = 150;
-    const centerY = 150;
+    const lineWidth = 300;  // Increased from 200 to 300
+    const centerX = 200;  // Updated center for new viewBox
+    const centerY = 200;  // Updated center for new viewBox
     const startX = centerX - lineWidth / 2;
     const endX = centerX + lineWidth / 2;
 
     // Calculate dot position (back and forth along the line based on phase)
     const getDotPosition = () => {
       const sideProgress = progress / 100;
-      
+
       if (phase === 'inhale') {
         // Move from left to right
         return startX + (endX - startX) * sideProgress;
@@ -509,7 +509,7 @@ function App() {
           stroke="rgba(100, 200, 255, 0.8)"
           strokeWidth="3"
         />
-        
+
         {/* End points */}
         <circle
           cx={startX}
@@ -523,7 +523,7 @@ function App() {
           r="4"
           fill="rgba(255, 255, 255, 0.6)"
         />
-        
+
         {/* Moving dot */}
         <circle
           cx={dotX}
@@ -536,15 +536,15 @@ function App() {
   };
 
   const renderFourSevenEightBreathing = (animationProgress: number) => {
-    const centerX = 150;
-    const centerY = 150;
-    const radius = 156; // 30% bigger radius for the Reuleaux triangle (120 * 1.3)
-    
+    const centerX = 200;  // Updated center for new viewBox
+    const centerY = 200;  // Updated center for new viewBox
+    const radius = 312;  // Increased by 30% from 240 to 312
+
     // For a proper Reuleaux triangle, the distance between vertices equals the radius
     // The three vertices of the equilateral triangle (centers of the arcs)
     const sideLength = radius;
     const height = sideLength * Math.sqrt(3) / 2;
-    
+
     const vertices = [
       { x: centerX, y: centerY - height * 2/3 },                    // top
       { x: centerX - sideLength / 2, y: centerY + height / 3 },     // bottom-left
@@ -561,15 +561,15 @@ function App() {
     // Calculate dot position based on current phase
     const getDotPosition = () => {
       const t = progress / 100;
-      
+
       if (phase === 'inhale') {
         // Arc from left corner to top corner (centered at bottom-right vertex)
         const center = vertices[2]; // bottom-right vertex
         // Calculate angle from center to left corner
         const startAngle = Math.atan2(corners[0].y - center.y, corners[0].x - center.x);
-        // Calculate angle from center to top corner  
+        // Calculate angle from center to top corner
         const endAngle = Math.atan2(corners[2].y - center.y, corners[2].x - center.x);
-        
+
         // Ensure we go the shorter way around the circle
         let deltaAngle = endAngle - startAngle;
         if (deltaAngle > Math.PI) {
@@ -577,9 +577,9 @@ function App() {
         } else if (deltaAngle < -Math.PI) {
           deltaAngle += 2 * Math.PI;
         }
-        
+
         const angle = startAngle + deltaAngle * t;
-        
+
         return {
           x: center.x + radius * Math.cos(angle),
           y: center.y + radius * Math.sin(angle)
@@ -589,7 +589,7 @@ function App() {
         const center = vertices[1]; // bottom-left vertex
         const startAngle = Math.atan2(corners[2].y - center.y, corners[2].x - center.x);
         const endAngle = Math.atan2(corners[1].y - center.y, corners[1].x - center.x);
-        
+
         // Ensure we go the shorter way around the circle
         let deltaAngle = endAngle - startAngle;
         if (deltaAngle > Math.PI) {
@@ -597,9 +597,9 @@ function App() {
         } else if (deltaAngle < -Math.PI) {
           deltaAngle += 2 * Math.PI;
         }
-        
+
         const angle = startAngle + deltaAngle * t;
-        
+
         return {
           x: center.x + radius * Math.cos(angle),
           y: center.y + radius * Math.sin(angle)
@@ -609,21 +609,21 @@ function App() {
         const center = vertices[0]; // top vertex
         const startAngle = Math.atan2(corners[1].y - center.y, corners[1].x - center.x);
         const endAngle = Math.atan2(corners[0].y - center.y, corners[0].x - center.x);
-        
+
         // For this arc, we want to go the long way around (clockwise from right to left)
         let deltaAngle = endAngle - startAngle;
         if (deltaAngle < 0) {
           deltaAngle += 2 * Math.PI;
         }
-        
+
         const angle = startAngle + deltaAngle * t;
-        
+
         return {
           x: center.x + radius * Math.cos(angle),
           y: center.y + radius * Math.sin(angle)
         };
       }
-      
+
       return corners[0]; // default to left corner
     };
 
@@ -641,7 +641,7 @@ function App() {
           stroke="rgba(100, 200, 255, 0.8)"
           strokeWidth="3"
         />
-        
+
         {/* Highlight the active arc */}
         {phase === 'inhale' && (
           <path
@@ -653,7 +653,7 @@ function App() {
             opacity="0.7"
           />
         )}
-        
+
         {phase === 'hold1' && (
           <path
             d={`M ${corners[2].x} ${corners[2].y}
@@ -664,7 +664,7 @@ function App() {
             opacity="0.7"
           />
         )}
-        
+
         {phase === 'exhale' && (
           <path
             d={`M ${corners[1].x} ${corners[1].y}
@@ -675,12 +675,12 @@ function App() {
             opacity="0.7"
           />
         )}
-        
+
         {/* Corner dots */}
         <circle cx={corners[0].x} cy={corners[0].y} r="4" fill="rgba(255, 255, 255, 0.6)" />
         <circle cx={corners[1].x} cy={corners[1].y} r="4" fill="rgba(255, 255, 255, 0.6)" />
         <circle cx={corners[2].x} cy={corners[2].y} r="4" fill="rgba(255, 255, 255, 0.6)" />
-        
+
         {/* Moving dot */}
         <circle
           cx={dotPos.x}
@@ -695,8 +695,8 @@ function App() {
   const renderDefaultCircle = () => {
     return (
       <circle
-        cx="150"
-        cy="150"
+        cx="200"
+        cy="200"
         r={getCircleRadius()}
         fill={`rgba(100, 200, 255, ${getCircleOpacity()})`}
         stroke="rgba(100, 200, 255, 0.8)"
@@ -775,7 +775,7 @@ function App() {
 
         {/* Collapsible Settings Menu */}
         <div className="settings-menu">
-          <button 
+          <button
             className="settings-toggle"
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
             aria-expanded={isSettingsOpen}
@@ -783,7 +783,7 @@ function App() {
             ⚙️ Settings
             <span className={`arrow ${isSettingsOpen ? 'open' : ''}`}>▼</span>
           </button>
-          
+
           <div className={`settings-content ${isSettingsOpen ? 'open' : ''}`}>
             {/* Visualization Mode Toggle */}
             <div className="visualization-toggle">
@@ -861,13 +861,13 @@ function App() {
 
         <div className="breathing-container">
           <div className="breathing-visual">
-            <svg width="300" height="300" viewBox="0 0 300 300">
+            <svg width="400" height="400" viewBox="0 0 400 400">
               {/* Background circle - only show in circle mode */}
               {!useShapes && (
                 <circle
-                  cx="150"
-                  cy="150"
-                  r="130"
+                  cx="200"
+                  cy="200"
+                  r="180"
                   fill="none"
                   stroke="rgba(255, 255, 255, 0.1)"
                   strokeWidth="2"
