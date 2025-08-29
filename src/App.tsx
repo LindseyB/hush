@@ -110,9 +110,11 @@ function App() {
   const [isRaining, setIsRaining] = useState(false);
   const [useShapes, setUseShapes] = useState(false); // Toggle between shapes and circles - default to circles
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Toggle for settings menu
+  const [isStartButtonVisible, setIsStartButtonVisible] = useState(true); // Track if start button is visible
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const startButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const currentExercise = breathingExercises[breathingType];
   const phaseDuration = currentExercise.phaseDurations[phase];
@@ -192,6 +194,29 @@ function App() {
       }
     };
   }, [isActive, timerMinutes, breathingType, remainingTime]);
+
+  // Intersection Observer for start button visibility
+  useEffect(() => {
+    const startButton = startButtonRef.current;
+    if (!startButton) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsStartButtonVisible(entry.isIntersecting);
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.9 // Button is considered visible if 90% is visible
+      }
+    );
+
+    observer.observe(startButton);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const handleStartStop = () => {
     setIsActive(!isActive);
@@ -979,12 +1004,25 @@ function App() {
 
         <div className="controls">
           <button
+            ref={startButtonRef}
             className={`control-btn ${isActive ? 'stop' : 'start'}`}
             onClick={handleStartStop}
           >
             {isActive ? 'Pause' : 'Start'}
           </button>
         </div>
+
+        {/* Sticky button that appears when main button is not visible */}
+        {!isStartButtonVisible && (
+          <div className="sticky-controls">
+            <button
+              className={`control-btn ${isActive ? 'stop' : 'start'}`}
+              onClick={handleStartStop}
+            >
+              {isActive ? 'Pause' : 'Start'}
+            </button>
+          </div>
+        )}
 
         <div className="stats">
           <p>Completed Cycles: <span className="cycle-count">{cycleCount}</span>

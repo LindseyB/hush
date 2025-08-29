@@ -405,6 +405,25 @@ h1 {
   margin: 2rem 0;
 }
 
+.sticky-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.sticky-controls .control-btn {
+  margin: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 .control-btn {
   padding: 12px 24px;
   border: none;
@@ -637,32 +656,32 @@ h1 {
   .exercise-btn {
     width: 200px;
   }
-  
+
   .settings-menu {
     top: 15px;
     right: 15px;
   }
-  
+
   .settings-toggle {
     min-width: 100px;
     padding: 6px 12px;
     font-size: 0.75rem;
   }
-  
+
   .settings-content {
     min-width: 260px;
     right: -10px;
   }
-  
+
   .toggle-buttons {
     gap: 0.5rem;
   }
-  
+
   .toggle-btn {
     min-width: 85px;
     font-size: 0.8rem;
   }
-  
+
   .settings-content.open {
     padding: 1rem;
   }
