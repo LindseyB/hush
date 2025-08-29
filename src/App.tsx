@@ -108,7 +108,7 @@ function App() {
   const [timerMinutes, setTimerMinutes] = useState<number>(0); // 0 means no timer
   const [remainingTime, setRemainingTime] = useState<number>(0); // in seconds
   const [isRaining, setIsRaining] = useState(false);
-  const [useShapes, setUseShapes] = useState(true); // Toggle between shapes and circles
+  const [useShapes, setUseShapes] = useState(false); // Toggle between shapes and circles - default to circles
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Toggle for settings menu
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
