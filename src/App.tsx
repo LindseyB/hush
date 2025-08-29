@@ -382,6 +382,55 @@ function App() {
           strokeWidth="3"
         />
 
+        {/* Highlight the active edge */}
+        {phase === 'inhale' && (
+          <line
+            x1={corners[0].x}
+            y1={corners[0].y}
+            x2={corners[1].x}
+            y2={corners[1].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+
+        {phase === 'hold1' && (
+          <line
+            x1={corners[1].x}
+            y1={corners[1].y}
+            x2={corners[2].x}
+            y2={corners[2].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+
+        {phase === 'exhale' && (
+          <line
+            x1={corners[2].x}
+            y1={corners[2].y}
+            x2={corners[3].x}
+            y2={corners[3].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+
+        {phase === 'hold2' && (
+          <line
+            x1={corners[3].x}
+            y1={corners[3].y}
+            x2={corners[0].x}
+            y2={corners[0].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+
         {/* Corner dots */}
         {corners.map((corner, index) => (
           <circle
@@ -453,6 +502,43 @@ function App() {
           stroke="rgba(100, 200, 255, 0.8)"
           strokeWidth="3"
         />
+
+        {/* Highlight the active edge */}
+        {phase === 'inhale' && (
+          <line
+            x1={points[1].x}
+            y1={points[1].y}
+            x2={points[0].x}
+            y2={points[0].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+
+        {phase === 'hold1' && (
+          <line
+            x1={points[0].x}
+            y1={points[0].y}
+            x2={points[2].x}
+            y2={points[2].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
+
+        {phase === 'exhale' && (
+          <line
+            x1={points[2].x}
+            y1={points[2].y}
+            x2={points[1].x}
+            y2={points[1].y}
+            stroke="rgba(100, 200, 255, 1)"
+            strokeWidth="5"
+            opacity="0.7"
+          />
+        )}
 
         {/* Corner dots */}
         {points.map((point, index) => (
@@ -538,7 +624,7 @@ function App() {
   const renderFourSevenEightBreathing = (animationProgress: number) => {
     const centerX = 200;  // Updated center for new viewBox
     const centerY = 200;  // Updated center for new viewBox
-    const radius = 312;  // Increased by 30% from 240 to 312
+    const radius = 312;
 
     // For a proper Reuleaux triangle, the distance between vertices equals the radius
     // The three vertices of the equilateral triangle (centers of the arcs)
