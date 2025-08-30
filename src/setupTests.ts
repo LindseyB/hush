@@ -35,7 +35,7 @@ class MockAudio {
   volume = 1;
   loop = false;
   muted = false;
-  
+
   constructor(src?: string) {
     // Optional constructor parameter
   }
