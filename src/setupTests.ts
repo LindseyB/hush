@@ -15,10 +15,6 @@ class MockIntersectionObserver {
   takeRecords = jest.fn(() => []);
 
   constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
-    // Store the callback for potential testing
-    this.observe = jest.fn();
-    this.disconnect = jest.fn();
-    this.unobserve = jest.fn();
   }
 }
 
