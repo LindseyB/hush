@@ -110,6 +110,19 @@ npm test App.test.tsx
 npm test -- --testNamePattern="breathing exercise"
 ```
 
+### **Continuous Integration**
+
+This project uses GitHub Actions for automated testing:
+
+- **Automated Testing**: All tests run automatically on Pull Requests and pushes to `main`
+- **Multi-Version Support**: Tests run on Node.js 18.x and 20.x to ensure compatibility
+- **Quality Gates**: Deployment only occurs after all tests pass successfully
+
+The CI workflow includes:
+- ✅ **Test Suite**: Full test execution across multiple Node.js versions
+
+See `.github/workflows/test.yml` for the complete workflow configuration.
+
 ## 🚀 Deployment
 
 This app is automatically deployed to GitHub Pages using GitHub Actions when code is pushed to the `main` branch.
