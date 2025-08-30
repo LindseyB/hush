@@ -48,6 +48,7 @@ Try it now: **https://LindseyB.github.io/hush**
    - Navigate to [http://localhost:3000](http://localhost:3000)
    - The app will automatically reload when you make changes
 
+
 ## 📱 How to Use
 
 1. **Choose your breathing technique** using the toggle buttons at the top
@@ -76,9 +77,6 @@ In the project directory, you can run:
 ### `npm start`
 Runs the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser. The page will reload if you make edits.
 
-### `npm test`
-Launches the test runner in interactive watch mode.
-
 ### `npm run build`
 Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
@@ -88,6 +86,42 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 
 ### `npm run deploy`
 Builds and deploys the app to GitHub Pages. The app will be available at https://LindseyB.github.io/hush
+
+## 🧪 Testing
+
+This app includes comprehensive test coverage to ensure reliability and maintainability.
+
+### **Running Tests**
+
+```bash
+# Run tests in interactive watch mode
+npm test
+
+# Run all tests once without watch mode
+npm test -- --watchAll=false
+
+# Run tests with coverage report
+npm test -- --coverage --watchAll=false
+
+# Run a specific test file
+npm test App.test.tsx
+
+# Run tests matching a pattern
+npm test -- --testNamePattern="breathing exercise"
+```
+
+### **Continuous Integration**
+
+This project uses GitHub Actions for automated testing:
+
+- **Automated Testing**: All tests run automatically on Pull Requests and pushes to `main`
+- **Multi-Version Support**: Tests run on Node.js 18.x and 20.x to ensure compatibility
+- **Quality Gates**: Deployment only occurs after all tests pass successfully
+
+The CI workflow includes:
+- ✅ **Test Suite**: Full test execution across multiple Node.js versions
+
+See `.github/workflows/test.yml` for the complete workflow configuration.
 
 ## 🚀 Deployment
 
