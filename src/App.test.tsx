@@ -15,7 +15,9 @@ describe('Hush Breathing App - Core Functionality Tests', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     jest.clearAllTimers();
     jest.useRealTimers();
   });
